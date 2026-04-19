@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* TipTap editor placeholder */
+  .tiptap p.is-editor-empty:first-child::before {
+    color: #9ca3af;
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
+}
+
+@layer components {
+  .prose pre {
+    @apply bg-gray-50 border border-gray-100 rounded-xl text-sm;
+  }
+  .prose code {
+    @apply bg-gray-100 rounded px-1 py-0.5 text-xs font-mono text-gray-800;
+  }
+  .prose code::before,
+  .prose code::after {
+    content: none;
+  }
+  .prose blockquote {
+    @apply border-l-2 border-gray-200 text-gray-500 not-italic;
+  }
+  .prose a {
+    @apply text-gray-900 underline underline-offset-2 decoration-gray-300 hover:decoration-gray-700 transition-colors;
+  }
+  .prose img {
+    @apply rounded-xl;
+  }
+  .prose h1, .prose h2, .prose h3 {
+    @apply font-semibold tracking-tight;
+  }
+}
