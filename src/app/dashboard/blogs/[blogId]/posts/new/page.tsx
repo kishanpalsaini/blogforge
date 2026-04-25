@@ -26,6 +26,8 @@ export default function NewPostPage({ params }: Props) {
   const [seoDesc, setSeoDesc] = useState('')
   const [saving, setSaving] = useState(false)
   const [seoOpen, setSeoOpen] = useState(false)
+  const [toolLink, setToolLink] = useState('')
+  const [toolName, setToolName] = useState('')
   const [error, setError] = useState('')
 
   function handleTitleChange(value: string) {
@@ -76,6 +78,8 @@ export default function NewPostPage({ params }: Props) {
       status,
       seo_title: seoTitle || null,
       seo_description: seoDesc || null,
+      tool_link: toolLink || null,
+      tool_name: toolName || null,
       published_at: status === 'published' ? new Date().toISOString() : null,
     }).select().single()
 
@@ -175,6 +179,23 @@ export default function NewPostPage({ params }: Props) {
           <textarea value={excerpt} onChange={e => setExcerpt(e.target.value)} rows={2}
             placeholder="Brief description of this post..."
             className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-gray-900 resize-none" />
+        </div>
+
+        {/* Tool Info */}
+        <div className="mt-4 border border-gray-200 rounded-xl p-4 space-y-3">
+          <p className="text-xs font-medium text-gray-500">Tool Info</p>
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">Tool Name</label>
+            <input value={toolName} onChange={e => setToolName(e.target.value)}
+              placeholder="e.g. free online word processor"
+              className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900" />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">Tool Link</label>
+            <input value={toolLink} onChange={e => setToolLink(e.target.value)}
+              placeholder="/tools/your-tool-slug"
+              className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 font-mono" />
+          </div>
         </div>
 
         {/* SEO */}

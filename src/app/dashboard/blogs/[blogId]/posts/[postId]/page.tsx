@@ -25,6 +25,8 @@ export default function EditPostPage({ params }: Props) {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [seoOpen, setSeoOpen] = useState(false)
+  const [toolLink, setToolLink] = useState('')
+  const [toolName, setToolName] = useState('')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -44,6 +46,8 @@ export default function EditPostPage({ params }: Props) {
         setSeoDesc(data.seo_description ?? '')
         setStatus(data.status)
         setViews(data.views)
+        setToolLink(data.tool_link ?? '')
+        setToolName(data.tool_name ?? '')
         setUpdatedAt(data.updated_at)
       }
       setLoading(false)
@@ -63,6 +67,8 @@ export default function EditPostPage({ params }: Props) {
       seo_title: seoTitle,
       seo_description: seoDesc,
       status: targetStatus,
+      tool_link: toolLink,
+      tool_name: toolName,
       published_at: targetStatus === 'published' ? new Date().toISOString() : undefined,
     }).eq('id', params.postId)
 
@@ -163,7 +169,7 @@ export default function EditPostPage({ params }: Props) {
         <TipTapEditor content={content} onChange={setContent} />
 
         <div className="mt-6">
-          <label className="block text-xs font-medium text-gray-500 mb-1.5">Excerpt</label>
+          <label className="block text-xs font-medium text-gray-500 mb-1.5">Excerpt kp</label>
           <textarea
             value={excerpt}
             onChange={e => setExcerpt(e.target.value)}
@@ -172,6 +178,22 @@ export default function EditPostPage({ params }: Props) {
             className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-gray-900 resize-none"
           />
         </div>
+
+        <div className="mt-4 border border-gray-200 rounded-xl p-4 space-y-3">
+          <p className="text-sm font-medium text-gray-600">Tool Info</p>
+          <div>
+            <label className="text-xs text-gray-500">Tool Name</label>
+            <input value={toolName} onChange={e => setToolName(e.target.value)}
+              className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 ..." />
+          </div>
+          <div>
+            <label className="text-xs text-gray-500">Tool Link</label>
+            <input value={toolLink} onChange={e => setToolLink(e.target.value)}
+              placeholder="/tools/your-tool-slug"
+              className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 font-mono ..." />
+          </div>
+        </div>
+
 
         <div className="mt-4 border border-gray-200 rounded-xl overflow-hidden">
           <button
@@ -204,6 +226,7 @@ export default function EditPostPage({ params }: Props) {
               </div>
             </div>
           )}
+
         </div>
       </div>
     </div>
