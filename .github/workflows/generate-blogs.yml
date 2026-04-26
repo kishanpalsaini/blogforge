@@ -2,11 +2,7 @@ name: Daily Blog Generator
 
 on:
   schedule:
-    # Runs every day at 7:00 AM UTC (12:30 PM IST)
-    # Blogs will then be staggered from 8am onwards via the script
     - cron: '0 7 * * *'
-
-  # Allow manual trigger from GitHub Actions UI
   workflow_dispatch:
     inputs:
       blogs_count:
@@ -22,7 +18,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          # We need write access to commit progress.json back
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
@@ -35,11 +30,11 @@ jobs:
 
       - name: Generate blogs
         env:
-          GEMINI_API_KEY:      ${{ secrets.GEMINI_API_KEY }}
-          SUPABASE_URL:        ${{ secrets.SUPABASE_URL }}
+          GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-          BLOG_ID:             ${{ secrets.BLOG_ID }}
-          BLOGS_PER_RUN:       ${{ github.event.inputs.blogs_count || '10' }}
+          BLOG_ID:              ${{ secrets.BLOG_ID }}
+          BLOGS_PER_RUN:        ${{ github.event.inputs.blogs_count || '10' }}
         run: node scripts/generate-blogs.mjs
 
       - name: Commit updated progress.json
