@@ -13,7 +13,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const BLOGS_PER_RUN = 10          // how many blogs to generate per day (max 15)
 const BLOG_ID = process.env.BLOG_ID  // your Supabase blog_id (uuid)
 const GEMINI_KEY = process.env.GEMINI_API_KEY
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
+const SUPABASE_URL = process.env.SUPABASE_URL
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY  // use service role key
 
 // ─── Supabase client ──────────────────────────────────────────────────────────
