@@ -198,7 +198,7 @@ async function main() {
             currentIndex++
 
             if (i < BLOGS_PER_RUN - 1) {
-                await new Promise(r => setTimeout(r, 2000))
+                await new Promise(r => setTimeout(r, 200000)) // 200 seconds delay between generations to avoid rate limits
             }
 
         } catch (err) {

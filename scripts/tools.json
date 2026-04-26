@@ -1,27 +1,147 @@
 [
     {
+        "tool_name": "free online JSON formatter",
+        "tool_link": "/tools/online-json-formatter",
+        "topic": "online JSON formatter and validator"
+    },
+    {
+        "tool_name": "free Base64 encoder decoder online",
+        "tool_link": "/tools/online-base-64-client",
+        "topic": "base64 encode and decode online"
+    },
+    {
+        "tool_name": "free URL encoder decoder online",
+        "tool_link": "/tools/online-url-encoder-decoder",
+        "topic": "URL encoder and decoder online"
+    },
+    {
+        "tool_name": "free HTML minifier online",
+        "tool_link": "/tools/online-html-minifier",
+        "topic": "HTML minifier online"
+    },
+    {
+        "tool_name": "free CSS minifier online",
+        "tool_link": "/tools/online-css-minifier",
+        "topic": "CSS minifier online"
+    },
+    {
+        "tool_name": "free AES encrypt decrypt online",
+        "tool_link": "/tools/online-crypto-encrypt-decrypt",
+        "topic": "AES encryption and decryption online"
+    },
+    {
+        "tool_name": "free JSON viewer online",
+        "tool_link": "/tools/online-json-viewer",
+        "topic": "JSON viewer with tree view online"
+    },
+    {
+        "tool_name": "free JSON diff tool online",
+        "tool_link": "/tools/online-json-diff",
+        "topic": "JSON diff and compare online"
+    },
+    {
+        "tool_name": "free JSON validator online",
+        "tool_link": "/tools/online-json-validator",
+        "topic": "JSON validator and schema checker online"
+    },
+    {
+        "tool_name": "free JSON to CSV converter online",
+        "tool_link": "/tools/online-json-to-csv",
+        "topic": "JSON to CSV converter online"
+    },
+    {
+        "tool_name": "free JSONPath query tool online",
+        "tool_link": "/tools/online-json-path",
+        "topic": "JSONPath query and extractor online"
+    },
+    {
+        "tool_name": "free online notepad",
+        "tool_link": "/tools/online-notepad",
+        "topic": "online notepad with auto save"
+    },
+    {
+        "tool_name": "free online pomodoro timer",
+        "tool_link": "/tools/online-pomodoro-timer",
+        "topic": "online pomodoro focus timer"
+    },
+    {
         "tool_name": "free online word processor",
         "tool_link": "/tools/online-word-editor",
-        "topic": "word editor"
+        "topic": "online word editor and processor"
     },
     {
-        "tool_name": "free PDF to Word converter",
-        "tool_link": "/tools/pdf-to-word",
-        "topic": "pdf to word converter"
+        "tool_name": "free QR code generator online",
+        "tool_link": "/tools/online-qr-generator",
+        "topic": "QR code generator online"
     },
     {
-        "tool_name": "free online PDF editor",
-        "tool_link": "/tools/pdf-editor",
-        "topic": "pdf editor"
+        "tool_name": "free barcode generator online",
+        "tool_link": "/tools/online-barcode-generator",
+        "topic": "barcode generator online"
     },
     {
-        "tool_name": "free resume builder online",
-        "tool_link": "/tools/resume-builder",
-        "topic": "resume builder"
+        "tool_name": "free word counter online",
+        "tool_link": "/tools/online-word-counter",
+        "topic": "word counter and reading time estimator online"
     },
     {
-        "tool_name": "free online text editor",
-        "tool_link": "/tools/text-editor",
-        "topic": "text editor"
+        "tool_name": "free character counter online",
+        "tool_link": "/tools/online-character-counter",
+        "topic": "character counter online"
+    },
+    {
+        "tool_name": "free case converter online",
+        "tool_link": "/tools/online-case-converter",
+        "topic": "text case converter online"
+    },
+    {
+        "tool_name": "free fancy font generator online",
+        "tool_link": "/tools/online-fancy-font-generator",
+        "topic": "fancy font generator for social media"
+    },
+    {
+        "tool_name": "free remove extra spaces tool online",
+        "tool_link": "/tools/online-remove-extra-spaces",
+        "topic": "remove extra spaces from text online"
+    },
+    {
+        "tool_name": "free line break remover online",
+        "tool_link": "/tools/online-line-break-remover",
+        "topic": "line break remover online"
+    },
+    {
+        "tool_name": "free text sorter online",
+        "tool_link": "/tools/online-text-sorter",
+        "topic": "text sorter alphabetical online"
+    },
+    {
+        "tool_name": "free duplicate line remover online",
+        "tool_link": "/tools/online-duplicate-remover",
+        "topic": "duplicate line remover online"
+    },
+    {
+        "tool_name": "free text to emoji converter online",
+        "tool_link": "/tools/online-text-to-emoji",
+        "topic": "text to emoji converter online"
+    },
+    {
+        "tool_name": "free reverse text generator online",
+        "tool_link": "/tools/online-reverse-text-generator",
+        "topic": "reverse text generator online"
+    },
+    {
+        "tool_name": "free PNG to JPG converter online",
+        "tool_link": "/tools/images/online-png-to-jpg",
+        "topic": "PNG to JPG converter online"
+    },
+    {
+        "tool_name": "free JPG to PNG converter online",
+        "tool_link": "/tools/images/online-jpg-to-png",
+        "topic": "JPG to PNG converter online"
+    },
+    {
+        "tool_name": "free universal image converter online",
+        "tool_link": "/tools/images/online-universal-image-converter",
+        "topic": "universal image format converter online"
     }
 ]
