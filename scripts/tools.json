@@ -1,0 +1,27 @@
+[
+    {
+        "tool_name": "free online word processor",
+        "tool_link": "/tools/online-word-editor",
+        "topic": "word editor"
+    },
+    {
+        "tool_name": "free PDF to Word converter",
+        "tool_link": "/tools/pdf-to-word",
+        "topic": "pdf to word converter"
+    },
+    {
+        "tool_name": "free online PDF editor",
+        "tool_link": "/tools/pdf-editor",
+        "topic": "pdf editor"
+    },
+    {
+        "tool_name": "free resume builder online",
+        "tool_link": "/tools/resume-builder",
+        "topic": "resume builder"
+    },
+    {
+        "tool_name": "free online text editor",
+        "tool_link": "/tools/text-editor",
+        "topic": "text editor"
+    }
+]

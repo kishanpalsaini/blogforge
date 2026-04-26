@@ -1,0 +1,53 @@
+name: Daily Blog Generator
+
+on:
+  schedule:
+    # Runs every day at 7:00 AM UTC (12:30 PM IST)
+    # Blogs will then be staggered from 8am onwards via the script
+    - cron: '0 7 * * *'
+
+  # Allow manual trigger from GitHub Actions UI
+  workflow_dispatch:
+    inputs:
+      blogs_count:
+        description: 'Number of blogs to generate (default: 10)'
+        required: false
+        default: '10'
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # We need write access to commit progress.json back
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install @supabase/supabase-js
+
+      - name: Generate blogs
+        env:
+          GEMINI_API_KEY:      ${{ secrets.GEMINI_API_KEY }}
+          SUPABASE_URL:        ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          BLOG_ID:             ${{ secrets.BLOG_ID }}
+          BLOGS_PER_RUN:       ${{ github.event.inputs.blogs_count || '10' }}
+        run: node scripts/generate-blogs.mjs
+
+      - name: Commit updated progress.json
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add scripts/progress.json
+          git diff --staged --quiet || git commit -m "chore: update blog generation progress [skip ci]"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
