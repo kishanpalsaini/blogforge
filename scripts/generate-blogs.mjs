@@ -1,6 +1,6 @@
 // scripts/generate-blogs.mjs
 // Run: node scripts/generate-blogs.mjs
-// Requires: GEMINI_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_KEY in env
+// Requires: GROQ_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_KEY, BLOG_ID in env
 
 import { createClient } from '@supabase/supabase-js'
 import { readFileSync, writeFileSync } from 'fs'
@@ -10,11 +10,17 @@ import { dirname, join } from 'path'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 // ─── Config ───────────────────────────────────────────────────────────────────
-const BLOGS_PER_RUN = 10          // how many blogs to generate per day (max 15)
-const BLOG_ID = process.env.BLOG_ID  // your Supabase blog_id (uuid)
-const GEMINI_KEY = process.env.GEMINI_API_KEY
+const BLOGS_PER_RUN = parseInt(process.env.BLOGS_PER_RUN || '10')
+const BLOG_ID = process.env.BLOG_ID
+const GROQ_KEY = process.env.GROQ_API_KEY
 const SUPABASE_URL = process.env.SUPABASE_URL
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY  // use service role key
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY
+
+// ─── Validate env vars ────────────────────────────────────────────────────────
+if (!GROQ_KEY) throw new Error('Missing GROQ_API_KEY')
+if (!SUPABASE_URL) throw new Error('Missing SUPABASE_URL')
+if (!SUPABASE_KEY) throw new Error('Missing SUPABASE_SERVICE_KEY')
+if (!BLOG_ID) throw new Error('Missing BLOG_ID')
 
 // ─── Supabase client ──────────────────────────────────────────────────────────
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
@@ -41,52 +47,58 @@ function calcReadTime(content) {
 }
 
 // ─── Stagger publish time ─────────────────────────────────────────────────────
-// Spreads posts throughout the day so Google doesn't see bulk publishing
 function getStaggeredTime(index) {
     const now = new Date()
-    // Start from 8am, spread every ~90 minutes
     const startHour = 8
     const minutesOffset = index * 90
-    now.setHours(startHour, minutesOffset % 60, 0, 0)
-    if (minutesOffset >= 60) {
-        now.setHours(startHour + Math.floor(minutesOffset / 60), minutesOffset % 60, 0, 0)
-    }
+    const totalMinutes = startHour * 60 + minutesOffset
+    now.setHours(Math.floor(totalMinutes / 60), totalMinutes % 60, 0, 0)
     return now.toISOString()
 }
 
-// ─── Call Gemini API ──────────────────────────────────────────────────────────
-async function callGemini(prompt) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`
-
-    const res = await fetch(url, {
+// ─── Call Groq API ────────────────────────────────────────────────────────────
+async function callGroq(prompt) {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${GROQ_KEY}`
+        },
         body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: {
-                temperature: 0.85,      // slightly creative for human-like writing
-                topP: 0.95,
-                maxOutputTokens: 4096,
-            }
+            model: 'llama-3.3-70b-versatile',
+            messages: [
+                {
+                    role: 'system',
+                    content: 'You are an expert SEO content writer who writes detailed, human-like blog posts. You always return valid JSON only — no markdown, no backticks, no extra text.'
+                },
+                {
+                    role: 'user',
+                    content: prompt
+                }
+            ],
+            temperature: 0.85,
+            max_tokens: 4096,
         })
     })
 
     const data = await res.json()
-    if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
-        throw new Error(`Gemini error: ${JSON.stringify(data)}`)
+
+    if (!data.choices?.[0]?.message?.content) {
+        throw new Error(`Groq error: ${JSON.stringify(data)}`)
     }
-    return data.candidates[0].content.parts[0].text
+
+    return data.choices[0].message.content
 }
 
-// ─── Generate blog via Gemini ─────────────────────────────────────────────────
+// ─── Generate blog via Groq ───────────────────────────────────────────────────
 async function generateBlog(tool) {
     const prompt = `
-You are an expert SEO content writer. Write a detailed, helpful blog post about "${tool.topic}".
+Write a detailed, helpful blog post about "${tool.topic}".
 
 The blog should feel naturally written by a human expert — not robotic or repetitive.
 Use varied sentence lengths. Include a personal tone occasionally. Add practical tips.
 
-Return ONLY a valid JSON object (no markdown, no backticks) with these exact fields:
+Return ONLY a valid JSON object (no markdown, no backticks, no extra text before or after) with these exact fields:
 {
   "title": "An engaging, SEO-optimized title (50-60 chars)",
   "slug": "seo-friendly-slug-with-keywords",
@@ -94,34 +106,34 @@ Return ONLY a valid JSON object (no markdown, no backticks) with these exact fie
   "seo_title": "SEO title (max 60 chars)",
   "seo_description": "Meta description (max 160 chars)",
   "category": "Tools",
-  "content": "Full HTML blog content (use <h2>, <h3>, <p>, <ul>, <li>, <strong> tags)"
+  "content": "Full HTML blog content"
 }
 
 Rules for content:
 - Minimum 1200 words
 - Start with a hook paragraph (no heading)
-- Use 4-6 H2 sections with descriptive headings
-- Include at least one H3 under an H2
-- Add a bullet list of features or tips in one section
-- Mention the tool link naturally: <a href="${tool.tool_link}">${tool.tool_name}</a>
+- Use 4-6 H2 sections with descriptive headings using <h2> tags
+- Include at least one H3 under an H2 using <h3> tags
+- Use <p> tags for paragraphs
+- Add a bullet list using <ul> and <li> tags in one section
+- Use <strong> for emphasis
+- Mention the tool naturally: <a href="${tool.tool_link}">${tool.tool_name}</a>
 - End with a strong call-to-action paragraph
 - Do NOT use phrases like "In conclusion" or "In summary"
-- Write like a knowledgeable human, not an AI assistant
+- Write like a knowledgeable human blogger
 - Vary sentence structure — mix short punchy sentences with longer detailed ones
+- Do not use the word "delve"
 `
 
-    const raw = await callGemini(prompt)
-
-    // Strip any accidental markdown fences
+    const raw = await callGroq(prompt)
     const cleaned = raw.replace(/```json|```/g, '').trim()
 
     try {
         return JSON.parse(cleaned)
     } catch (e) {
-        // Try to extract JSON if there's surrounding text
         const match = cleaned.match(/\{[\s\S]*\}/)
         if (match) return JSON.parse(match[0])
-        throw new Error(`Failed to parse Gemini response: ${cleaned.slice(0, 200)}`)
+        throw new Error(`Failed to parse Groq response: ${cleaned.slice(0, 300)}`)
     }
 }
 
@@ -136,20 +148,15 @@ async function main() {
     let failCount = 0
 
     for (let i = 0; i < BLOGS_PER_RUN; i++) {
-        // Rotate: when we reach the end, start from 0
         const toolIndex = currentIndex % tools.length
         const tool = tools[toolIndex]
 
         console.log(`\n[${i + 1}/${BLOGS_PER_RUN}] Generating: "${tool.topic}" (tool index: ${toolIndex})`)
 
         try {
-            // Generate blog content
             const blog = await generateBlog(tool)
-
-            // Build the final slug (use Gemini's suggestion or generate from title)
             const finalSlug = blog.slug || slugify(blog.title)
 
-            // Check for duplicate slug
             const { data: existing } = await supabase
                 .from('posts')
                 .select('id')
@@ -162,7 +169,6 @@ async function main() {
                 continue
             }
 
-            // Insert into Supabase
             const { error } = await supabase.from('posts').insert({
                 blog_id: BLOG_ID,
                 title: blog.title,
@@ -176,7 +182,7 @@ async function main() {
                 tool_link: tool.tool_link,
                 tool_name: tool.tool_name,
                 status: 'published',
-                published_at: getStaggeredTime(i),   // stagger throughout the day
+                published_at: getStaggeredTime(i),
                 cover_image: null,
             })
 
@@ -191,9 +197,8 @@ async function main() {
 
             currentIndex++
 
-            // Small delay between requests to be polite to Gemini API
             if (i < BLOGS_PER_RUN - 1) {
-                await new Promise(r => setTimeout(r, 3000))
+                await new Promise(r => setTimeout(r, 2000))
             }
 
         } catch (err) {
@@ -203,9 +208,8 @@ async function main() {
         }
     }
 
-    // Save updated progress (rotation)
     const updatedProgress = {
-        currentIndex: currentIndex % tools.length,  // rotate back to start
+        currentIndex: currentIndex % tools.length,
         lastRun: new Date().toISOString(),
         totalGenerated: (progress.totalGenerated || 0) + successCount
     }
