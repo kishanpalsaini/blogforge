@@ -56,7 +56,7 @@ function getStaggeredTime(index) {
 
 // ─── Call Gemini API ──────────────────────────────────────────────────────────
 async function callGemini(prompt) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${GEMINI_KEY}`
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`
 
     const res = await fetch(url, {
         method: 'POST',
