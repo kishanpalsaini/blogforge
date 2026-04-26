@@ -46,6 +46,13 @@ function calcReadTime(content) {
     return `${minutes} min read`
 }
 
+// ─── Make slug always unique ──────────────────────────────────────────────────
+function makeUniqueSlug(baseSlug) {
+    const date = new Date()
+    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+    return `${baseSlug}-${dateStr}`
+}
+
 // ─── Stagger publish time ─────────────────────────────────────────────────────
 function getStaggeredTime(index) {
     const now = new Date()
@@ -155,19 +162,20 @@ async function main() {
 
         try {
             const blog = await generateBlog(tool)
-            const finalSlug = blog.slug || slugify(blog.title)
+            const baseSlug = blog.slug || slugify(blog.title)
+            const finalSlug = makeUniqueSlug(baseSlug)
 
-            const { data: existing } = await supabase
-                .from('posts')
-                .select('id')
-                .eq('slug', finalSlug)
-                .single()
+            // const { data: existing } = await supabase
+            //     .from('posts')
+            //     .select('id')
+            //     .eq('slug', finalSlug)
+            //     .single()
 
-            if (existing) {
-                console.log(`  ⚠️  Slug already exists: ${finalSlug} — skipping`)
-                currentIndex++
-                continue
-            }
+            // if (existing) {
+            //     console.log(`  ⚠️  Slug already exists: ${finalSlug} — skipping`)
+            //     currentIndex++
+            //     continue
+            // }
 
             const { error } = await supabase.from('posts').insert({
                 blog_id: BLOG_ID,
