@@ -84,7 +84,7 @@ async function callGroq(prompt) {
                 }
             ],
             temperature: 0.85,
-            max_tokens: 4096,
+            max_tokens: 2000,
         })
     })
 
@@ -220,6 +220,11 @@ async function main() {
             }
 
         } catch (err) {
+
+            if (i < BLOGS_PER_RUN - 1) {
+                console.log(`  ⏳ Waiting 20s before next request...`)
+                await new Promise(r => setTimeout(r, 20000)) // 20s is enough with 2000 max_tokens
+            }
             console.log(`  ❌ Failed: ${err.message}`)
             failCount++
             currentIndex++
