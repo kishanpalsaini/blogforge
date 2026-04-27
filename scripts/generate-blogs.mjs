@@ -133,13 +133,23 @@ Rules for content:
 `
 
     const raw = await callGroq(prompt)
-    const cleaned = raw.replace(/```json|```/g, '').trim()
+    // With this:
+    const cleaned = raw
+        .replace(/```json|```/g, '')
+        .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '') // strip bad control chars
+        .trim()
 
     try {
         return JSON.parse(cleaned)
     } catch (e) {
         const match = cleaned.match(/\{[\s\S]*\}/)
-        if (match) return JSON.parse(match[0])
+        if (match) {
+            try {
+                return JSON.parse(match[0])
+            } catch (e2) {
+                throw new Error(`Failed to parse Groq response: ${cleaned.slice(0, 300)}`)
+            }
+        }
         throw new Error(`Failed to parse Groq response: ${cleaned.slice(0, 300)}`)
     }
 }
