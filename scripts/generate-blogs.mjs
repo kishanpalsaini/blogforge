@@ -72,7 +72,7 @@ async function callGroq(prompt) {
             'Authorization': `Bearer ${GROQ_KEY}`
         },
         body: JSON.stringify({
-            model: 'llama-3.3-70b-versatile',
+            model: 'llama-3.1-8b-instant',  // ✅ Changed: higher TPM limit, less truncation
             messages: [
                 {
                     role: 'system',
@@ -117,7 +117,7 @@ Return ONLY a valid JSON object (no markdown, no backticks, no extra text before
 }
 
 Rules for content:
-- Minimum 1200 words
+- Minimum 800 words
 - Start with a hook paragraph (no heading)
 - Use 4-6 H2 sections with descriptive headings using <h2> tags
 - Include at least one H3 under an H2 using <h3> tags
@@ -133,7 +133,6 @@ Rules for content:
 `
 
     const raw = await callGroq(prompt)
-    // With this:
     const cleaned = raw
         .replace(/```json|```/g, '')
         .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '') // strip bad control chars
@@ -175,18 +174,6 @@ async function main() {
             const baseSlug = blog.slug || slugify(blog.title)
             const finalSlug = makeUniqueSlug(baseSlug)
 
-            // const { data: existing } = await supabase
-            //     .from('posts')
-            //     .select('id')
-            //     .eq('slug', finalSlug)
-            //     .single()
-
-            // if (existing) {
-            //     console.log(`  ⚠️  Slug already exists: ${finalSlug} — skipping`)
-            //     currentIndex++
-            //     continue
-            // }
-
             const { error } = await supabase.from('posts').insert({
                 blog_id: BLOG_ID,
                 title: blog.title,
@@ -216,16 +203,16 @@ async function main() {
             currentIndex++
 
             if (i < BLOGS_PER_RUN - 1) {
-                await new Promise(r => setTimeout(r, 200000)) // 200 seconds delay between generations to avoid rate limits
+                await new Promise(r => setTimeout(r, 20000)) // ✅ Changed: 20s delay (was 200s — no need with faster model)
             }
 
         } catch (err) {
-
+            // ✅ Fixed: log error first, then wait
+            console.log(`  ❌ Failed: ${err.message}`)
             if (i < BLOGS_PER_RUN - 1) {
                 console.log(`  ⏳ Waiting 20s before next request...`)
-                await new Promise(r => setTimeout(r, 20000)) // 20s is enough with 2000 max_tokens
+                await new Promise(r => setTimeout(r, 20000))
             }
-            console.log(`  ❌ Failed: ${err.message}`)
             failCount++
             currentIndex++
         }
